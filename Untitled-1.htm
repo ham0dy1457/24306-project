@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ESP32 Sensor Dashboard</title>
+  <style>
+/* Base Styles (for larger screens) */
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background: #f4f4f4;
+  scroll-behavior: smooth;
+}
+
+.container {
+  display: flex;
+  flex-direction: row; /* Default: side by side layout */
+  width: 100%;
+}
+
+/* Left Panel (Graphs) */
+.left-panel {
+  width: 60%; /* Now this takes up 60% for the graphs */
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Graphs section adjustments */
+.sensor-section {
+  padding: 20px;
+  margin: 10px 0;
+  background-color: #f4f4f4;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.sensor-section canvas {
+  width: 100%;
+  height: 250px;
+}
+
+/* Right Panel (Sensor Data Boxes) */
+.right-panel {
+  width: 40%; /* This now takes up 40% for the sensor data */
+  padding: 20px;
+  background-color: #f4f4f4;
+  box-shadow: 2px 0px 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+/* Sensor Boxes */
+.sensor-box {
+  height: 150px;
+  padding: 40px 20px;
+  font-size: 40px;
+  color: white;
+  border-radius: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.lm35 { background: #a8d5ba; }
+.ir-module { background: #87bfc0; }
+.max30102 { background: #587b8c; }
+.mpu6050 { background: #adbcc3; }
+
+/* New Styles for Poster and Portfolio */
+.icons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 30px;
+}
+
+.icons a {
+  margin: 20px 0;
+  text-align: center;
+}
+
+.icons img {
+  width: 100%;
+  max-width: 350px; /* Adjust image size */
+  height: auto;
+  margin-bottom: 10px;
+  transition: transform 0.3s ease;
+}
+
+.icons img:hover {
+  transform: scale(1.1);
+}
+
+.icons .text {
+  font-size: 18px;
+  font-weight: 500;
+  color: #333;
+}
+
+/* Mobile View (Adjustments) */
+@media only screen and (max-width: 768px) {
+  /* Stack the container items */
+  .container {
+    flex-direction: column; /* Stack vertically for mobile */
+  }
+
+  /* Make left panel (graphs)*/
+  .left-panel {
+    width: 90%;
+    margin-bottom: 20px; /* Space between panels */
+  }
+
+  /* Make right panel (sensor data) */
+  .right-panel {
+    width: 100%;
+  }
+
+  /* Graphs section adjustments */
+  .sensor-section {
+    padding: 20px;
+    margin: 10px 0;
+  }
+
+  .sensor-section canvas {
+    width: 90%;
+    height: 250px; /* Adjust the height for mobile view */
+  }
+
+  /* Adjust icon images */
+  .icons img {
+    width: 90%;
+    max-width: 350px; /* Limit size of images */
+    margin-bottom: 20px;
+  }
+
+  /* Adjust text */
+  .title {
+    font-size: 28px; /* Smaller text for smaller screens */
+  }
+
+  /* Adjust sensor box sizes for mobile */
+  .sensor-box {
+    font-size: 30px;
+    height: auto;
+    padding: 20px;
+    margin-bottom: 15px;
+  }
+
+  /* Adjust Poster and Portfolio to be under the graphs */
+  .icons {
+    margin-top: 20px; /* Ensure the space between the graphs and icons */
+  }
+}
+
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <!-- Left Panel with Sensor Data -->
+    <div class="left-panel">
+      <img src="https://i.imgur.com/JkYtSXf.png" alt="Doctor Photo">
+      <div class="text"></div>
+      <h1 class="title">Non-Invasive Glucose Monitoring with ESP32 and Integrated Biometric Sensors</h1>
+      <div class="sensor-box lm35" id="temperature">Temperature: --</div>
+      <div class="sensor-box ir-module" id="ir-value">IR Sensor: --</div>
+      <div class="sensor-box max30102" id="glucose">BPM: --</div>
+      <div class="sensor-box mpu6050" id="pulse">Fall Detection: --</div> <!-- Moved this box under the BPM box -->
+      
+     <!-- New poster and portfolio section -->
+    <div class="icons">
+      <!-- Poster Image -->
+      <a href="https://i.imgur.com/tpjMjKo.png" target="_blank">
+        <img src="https://i.imgur.com/tpjMjKo.png" alt="Poster Image">
+        <div class="text">Download Poster</div>
+      </a>
+
+      <!-- Portfolio Image -->
+      <a href="https://i.imgur.com/PCf1ne2.png" target="_blank">
+        <img src="https://i.imgur.com/PCf1ne2.png" alt="Portfolio Folder">
+        <div class="text">Download Portfolio</div>
+      </a>
+    </div>
+</div>
+
+
+    </div>
+
+    <!-- Right Panel with Graphs -->
+    <div class="right-panel">
+      <!-- Section for LM35 Graph -->
+      <div class="sensor-section" id="sensor1">
+        <h2>LM35 Temperature Sensor Graph</h2>
+        <canvas id="lm35Graph"></canvas>
+      </div>
+
+      <!-- Section for IR Sensor Graph -->
+      <div class="sensor-section" id="sensor2">
+        <h2>IR Sensor Glucose Graph</h2>
+        <canvas id="irGraph"></canvas>
+      </div>
+
+      <!-- Section for MAX30102 Graph -->
+      <div class="sensor-section" id="sensor3">
+        <h2>MAX30102 BPM Graph</h2>
+        <canvas id="max30102Graph"></canvas>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <script>
+    // Initialize the charts
+    const ctxLM35 = document.getElementById('lm35Graph').getContext('2d');
+    const ctxIR = document.getElementById('irGraph').getContext('2d');
+    const ctxMax30102 = document.getElementById('max30102Graph').getContext('2d');
+
+    const lm35Chart = new Chart(ctxLM35, {
+      type: 'line',
+      data: {
+        labels: [],
+        datasets: [{
+          label: 'Temperature (°C)',
+          data: [],
+          borderColor: '#a8d5ba',
+          borderWidth: 2,
+          fill: false,
+        }],
+      },
+      options: {
+        responsive: true,
+        scales: {
+          x: {
+            type: 'linear',
+            position: 'bottom',
+            title: { display: true, text: 'Time (seconds)' }
+          },
+          y: {
+            title: { display: true, text: 'Temperature (°C)' }
+          }
+        },
+      },
+    });
+
+    const irChart = new Chart(ctxIR, {
+      type: 'line',
+      data: {
+        labels: [],
+        datasets: [{
+          label: 'IR Sensor Data',
+          data: [],
+          borderColor: '#87bfc0',
+          borderWidth: 2,
+          fill: false,
+        }],
+      },
+      options: {
+        responsive: true,
+        scales: {
+          x: {
+            type: 'linear',
+            position: 'bottom',
+            title: { display: true, text: 'Time (seconds)' }
+          },
+          y: {
+            title: { display: true, text: 'IR Value' }
+          }
+        },
+      },
+    });
+
+    const max30102Chart = new Chart(ctxMax30102, {
+      type: 'line',
+      data: {
+        labels: [],
+        datasets: [{
+          label: 'BPM',
+          data: [],
+          borderColor: '#587b8c',
+          borderWidth: 2,
+          fill: false,
+        }],
+      },
+      options: {
+        responsive: true,
+        scales: {
+          x: {
+            type: 'linear',
+            position: 'bottom',
+            title: { display: true, text: 'Time (seconds)' }
+          },
+          y: {
+            title: { display: true, text: 'BPM' }
+          }
+        },
+      },
+    });
+
+   fetch('http://192.168.1.184/data')  // Use the ESP32 IP address
+  .then(response => response.json())
+  .then(data => {
+    console.log(data);  // Debugging line to see what data is returned
+
+    // Ensure the data object matches expected structure
+    if (data.temperature !== undefined && data.glucose !== undefined) {
+      document.getElementById('temperature').innerText = `Temperature: ${data.temperature}°C`;
+      document.getElementById('glucose').innerText = `BPM: ${data.glucose}`;
+      document.getElementById('ir-value').innerText = `IR Value: ${data.irValue}`;
+      document.getElementById('pulse').innerText = `Fall Detection: ${data.fallDetected ? 'Yes' : 'No'}`;
+
+      // Update the charts with the fetched data
+      lm35Chart.data.labels.push(time);
+      lm35Chart.data.datasets[0].data.push(data.temperature);
+      lm35Chart.update();
+
+      irChart.data.labels.push(time);
+      irChart.data.datasets[0].data.push(data.irValue);
+      irChart.update();
+
+      max30102Chart.data.labels.push(time);
+      max30102Chart.data.datasets[0].data.push(data.glucose);
+      max30102Chart.update();
+
+      time++;
+    } else {
+      console.error('Received invalid data:', data);
+    }
+  })
+  .catch(error => {
+    console.error('Error fetching data:', error);
+  });
+
+  </script>
+
+</body>
+</html>

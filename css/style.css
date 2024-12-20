@@ -1,0 +1,150 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background: #f4f4f4;
+  scroll-behavior: smooth;
+}
+
+.container {
+  display: flex;
+  flex-direction: row; /* Default: side by side layout */
+  width: 100%;
+}
+
+/* Left Panel (Sensor Data Boxes) */
+.left-panel {
+  width: 40%;
+  padding: 20px;
+  background-color: #f4f4f4;
+  box-shadow: 2px 0px 10px rgba(0, 0, 0, 0.1);
+  text-align: center;
+}
+
+/* Sensor Boxes */
+.sensor-box {
+  height: 150px;
+  padding: 40px 20px;
+  font-size: 40px;
+  color: white;
+  border-radius: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.lm35 { background: #a8d5ba; }
+.ir-module { background: #87bfc0; }
+.max30102 { background: #587b8c; }
+.mpu6050 { background: #adbcc3; }
+
+/* Right Panel (Graphs) */
+.right-panel {
+  width: 60%;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Graphs section adjustments */
+.sensor-section {
+  padding: 20px;
+  margin: 10px 0;
+  background-color: #f4f4f4;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.sensor-section canvas {
+  width: 100%;
+  height: 250px;
+}
+
+/* New Styles for Poster and Portfolio */
+.icons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 30px;
+}
+
+.icons a {
+  margin: 20px 0;
+  text-align: center;
+}
+
+.icons img {
+  width: 100%;
+  max-width: 350px; /* Adjust image size */
+  height: auto;
+  margin-bottom: 10px;
+  transition: transform 0.3s ease;
+}
+
+.icons img:hover {
+  transform: scale(1.1);
+}
+
+.icons .text {
+  font-size: 18px;
+  font-weight: 500;
+  color: #333;
+}
+
+/* Mobile View (Adjustments) */
+@media only screen and (max-width: 768px) {
+  /* Stack the container items */
+  .container {
+    flex-direction: column; /* Stack vertically for mobile */
+  }
+
+  /* Make left panel (sensor data) full width */
+  .left-panel {
+    width: 100%;
+    margin-bottom: 20px; /* Space between panels */
+  }
+
+  /* Make right panel (graphs) full width */
+  .right-panel {
+    width: 100%;
+  }
+
+  /* Graphs section adjustments */
+  .sensor-section {
+    padding: 20px;
+    margin: 10px 0;
+  }
+
+  .sensor-section canvas {
+    width: 100%;
+    height: 250px; /* Adjust the height for mobile view */
+  }
+
+  /* Adjust icon images */
+  .icons img {
+    width: 100%;
+    max-width: 350px; /* Limit size of images */
+    margin-bottom: 20px;
+  }
+
+  /* Adjust text */
+  .title {
+    font-size: 28px; /* Smaller text for smaller screens */
+  }
+
+  /* Adjust sensor box sizes for mobile */
+  .sensor-box {
+    font-size: 30px;
+    height: auto;
+    padding: 20px;
+    margin-bottom: 15px;
+  }
+
+  /* Adjust Poster and Portfolio to be under the graphs */
+  .icons {
+    margin-top: 20px; /* Ensure the space between the graphs and icons */
+  }
+}
+
